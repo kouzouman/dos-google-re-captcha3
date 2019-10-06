@@ -83,7 +83,7 @@ export class ReCaptcha3Server {
    */
   static async getScore(secretKey, token, ip) {
     //  GoogleReCaptchaのスコアを取得
-    const res = await ReCaptcha3Client.post(ReCaptcha3Server.RECAPTCHA_API, {
+    const res = await ReCaptcha3Server.post(ReCaptcha3Server.RECAPTCHA_API, {
       secret: secretKey,
       response: token,
       remoteip: ip
@@ -98,7 +98,7 @@ export class ReCaptcha3Server {
    * @param {Object} param
    */
   static async post(url, param) {
-    const res = await axios.post(`${url}`, ReCaptcha3Client.combParamStr(param))
+    const res = await axios.post(`${url}`, ReCaptcha3Server.combParamStr(param))
     return res
   }
 
@@ -109,9 +109,11 @@ export class ReCaptcha3Server {
   static combParamStr(params) {
     let res = new URLSearchParams()
 
-    cf.Object2Array(params).forEach(v => {
-      res.append(v.key, v.value)
-    })
+    for (let key in params) {
+      if (typeof params[key] != 'function' && typeof params[key] != 'undefined')
+        res.append(key, params[key])
+    }
+
     return res
   }
 }
